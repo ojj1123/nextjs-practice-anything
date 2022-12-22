@@ -26,7 +26,7 @@ class LocalStorage implements Storage {
   public static canUse(): boolean {
     const TEST_KEY = generateTestKey();
 
-    // 사용자가 쿠키 차단을 하는 경우 LocalStorage '접근' 시에 예외가 발생합니다.
+    // NOTE: 사용자가 쿠키 차단을 하는 경우 or SSR환경에서는 localStorage 접근 시에 예외가 발생합니다.
     try {
       localStorage.setItem(TEST_KEY, 'test');
       localStorage.removeItem(TEST_KEY);

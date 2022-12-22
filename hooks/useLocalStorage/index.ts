@@ -1,4 +1,4 @@
-import { SetStateAction, useCallback, useState } from 'react';
+import { SetStateAction, useCallback, useEffect, useState } from 'react';
 import { safeLocalStorage } from './storage';
 
 export type Serializable<T> = T extends
@@ -13,7 +13,28 @@ export type Serializable<T> = T extends
 interface StorageStateOptions<T> {
   defaultValue?: Serializable<T>;
 }
+interface StorageStateOptionsWithDefaultValue<T>
+  extends StorageStateOptions<T> {
+  defaultValue: Serializable<T>;
+}
 
+export function useLocalStorage<T>(
+  key: string
+): readonly [
+  Serializable<T> | undefined,
+  (value: SetStateAction<Serializable<T> | undefined>) => void
+];
+export function useLocalStorage<T>(
+  key: string,
+  { defaultValue }: StorageStateOptionsWithDefaultValue<T>
+): readonly [Serializable<T>, (value: SetStateAction<Serializable<T>>) => void];
+export function useLocalStorage<T>(
+  key: string,
+  { defaultValue }: StorageStateOptions<T>
+): readonly [
+  Serializable<T> | undefined,
+  (value: SetStateAction<Serializable<T> | undefined>) => void
+];
 export function useLocalStorage<T>(
   key: string,
   { defaultValue }: StorageStateOptions<T> = {}
@@ -22,14 +43,14 @@ export function useLocalStorage<T>(
   (value: SetStateAction<Serializable<T> | undefined>) => void
 ] {
   const getValue = useCallback(<T>() => {
-    const data = safeLocalStorage.get(key);
+    const item = safeLocalStorage.get(key);
 
-    if (data == null) {
+    if (item == null) {
       return defaultValue;
     }
 
     try {
-      const result = JSON.parse(data);
+      const result = JSON.parse(item);
 
       if (result == null) {
         return defaultValue;
@@ -42,7 +63,16 @@ export function useLocalStorage<T>(
     }
   }, [defaultValue, key]);
 
-  const [state, setState] = useState<Serializable<T> | undefined>(getValue);
+  /**
+   * NOTE: hydration error 때문에 useState의 초기값으로 defaultValue을 넣어줌
+   * @see https://nextjs.org/docs/messages/react-hydration-error
+   */
+  const [state, setState] = useState<Serializable<T> | undefined>(defaultValue);
+
+  useEffect(() => {
+    setState(getValue());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const set = useCallback(
     (value: SetStateAction<Serializable<T> | undefined>) => {
