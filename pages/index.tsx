@@ -1,12 +1,16 @@
-import { useEffect } from 'react';
-import { useLocalStorage } from '../hooks/useLocalStorage';
+import { Suspense, useDeferredValue, useState } from 'react';
+import SearchResults from '../components/SearchResults';
 
 export default function Home() {
-  const [value, setValue] = useLocalStorage<number>('test', {
-    defaultValue: 0,
-  });
-  useEffect(() => {
-    setValue((prev) => prev + 1);
-  }, []);
-  return <div>{value}</div>;
+  const [query, setQuery] = useState<string>('');
+  const deferredQuery = useDeferredValue(query);
+
+  return (
+    <div>
+      <input value={query} onChange={(e) => setQuery(e.target.value)} />
+      <Suspense fallback={<h2>Loading...</h2>}>
+        <SearchResults query={deferredQuery} />
+      </Suspense>
+    </div>
+  );
 }
