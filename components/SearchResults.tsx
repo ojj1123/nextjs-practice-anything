@@ -9,6 +9,12 @@ import { Product, fetchData } from '../utils/data';
 interface Props {
   query: string;
 }
+/**
+ * useDeferredValue 관련 문서 링크
+ * @see https://beta.reactjs.org/apis/react/useDeferredValue
+ * @see https://reactjs.org/blog/2022/03/29/react-v18.html#new-feature-transitions
+ * @see https://yrnana.dev/post/2022-04-12-react-18#suspense%EC%99%80-transition
+ */
 export default function SearchResults({ query }: Props) {
   if (query === '') {
     return null;
