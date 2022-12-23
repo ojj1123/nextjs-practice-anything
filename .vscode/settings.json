@@ -1,11 +1,21 @@
 {
   "tailwindCSS.experimental.classRegex": [
-    ["classnames\\(([^)]*)\\)", "'([^']*)'"],
+    [
+      "classnames\\(([^)]*)\\)",
+      "'([^']*)'"
+    ],
     "class=\"([^\"]*)", // <div class="..." />
     "tw`([^`]*)", // tw`...`
     "tw=\"([^\"]*)", // <div tw="..." />
     "tw={\"([^\"}]*)", // <div tw={"..."} />
     "tw\\.\\w+`([^`]*)", // tw.xxx`...`
     "tw\\(.*?\\)`([^`]*)" // tw(Component)`...`
-  ]
+  ],
+  "search.exclude": {
+    "**/.yarn": true,
+    "**/.pnp.*": true
+  },
+  "eslint.nodePath": ".yarn/sdks",
+  "typescript.tsdk": ".yarn/sdks/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true
 }
